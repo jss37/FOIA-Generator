@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FOIA Request Generator</title>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #0c5449;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    form {
+      background-color: #e1efdb; /* Updated background color for the form */
+      padding: 1vw;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      height:65vw;
+      margin-top:0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: calc(100% - 16px);
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #0c5449;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #073a31;
+    }
+
+    /* Modal styles */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 80%;
+      width: 100%;
+    }
+
+    #modalClose {
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    #generatedLetter {
+      white-space: pre-line;
+      margin-top: 20px;
+    }
+
+    #downloadLink {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      color: #007bff;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="foiaForm">
+    <label for="agencyHead">Agency Head:</label>
+    <input type="text" id="agencyHead" name="agencyHead" required>
+
+    <label for="agencyName">Name of Agency:</label>
+    <input type="text" id="agencyName" name="agencyName" required>
+
+    <label for="agencyAddress">Address of Agency:</label>
+    <input type="text" id="agencyAddress" name="agencyAddress" required>
+
+    <label for="agencyCityStateZip">City, State, Zip Code:</label>
+    <input type="text" id="agencyCityStateZip" name="agencyCityStateZip" required>
+
+    <label for="documents">Identify the documents or information as specifically as possible:</label>
+    <input type="text" id="documents" name="documents" required>
+    <label for="description">Identify the documents or information as specifically as possible:</label>
+    <input type="text" id="description" name="description" required>
+
+    <label for="dollar">$:</label>
+    <input type="text" id="dollar" name="dollar" required>
+
+    
+    <label for="explanation">Explain why your fee should be waived:</label>
+    <input type="text" id="explanation" name="explanation" required>
+    
+
+    <label for="name">Your name:</label>
+    <input type="text" id="name" name="name" required>
+
+    
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required>
+
+    <label for="csz">City, State, Zip Code:</label>
+    <input type="text" id="csz" name="csz" required>
+
+    <label for="phone">Phone or Email:</label>
+    <input type="text" id="phone" name="phone" required>
+
+    <button type="button" onclick="showGeneratedLetter()">Generate Letter</button>
+  </form>
+
+  <div id="modalOverlay">
+    <span id="modalClose" onclick="closeModal()">X</span>
+    <div id="generatedLetter"></div>
+    <a id="downloadLink" onclick="downloadLetter()">Download Letter</a>
+  </div>
+
+  <script>
+    function showGeneratedLetter() {
+      const agencyHead = document.getElementById('agencyHead').value;
+      const agencyName = document.getElementById('agencyName').value;
+      const agencyAddress = document.getElementById('agencyAddress').value;
+      const agencyCityStateZip = document.getElementById('agencyCityStateZip').value;
+      const documents = document.getElementById('documents').value;
+      const description = document.getElementById('description').value;
+      const dollar = document.getElementById('dollar').value;
+      const explanation = document.getElementById('explanation').value;
+      const name = document.getElementById('name').value;
+      const csz = document.getElementById('csz').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+
+      const letterTemplate = `
+${agencyHead}
+${agencyName}
+${agencyAddress}
+${agencyCityStateZip}
+
+Re: Freedom of Information Act Request
+
+Dear ${agencyHead},
+
+This is a request under the Freedom of Information Act.
+
+I request that a copy of the following documents [or documents containing the following information] be provided to me: ${documents}.
+
+In order to help determine my status to assess fees, you should know that I am ${description}.
+
+I am willing to pay fees for this request up to a maximum of ${dollar}. If you estimate that the fees will exceed this limit, please inform me first.
+
+I request a waiver of all fees for this request. ${explanation}
+
+Thank you for your consideration of this request.
+
+Sincerely,
+
+${name}
+${address}
+${csz}
+${phone}
+`;
+
+      document.getElementById('generatedLetter').innerHTML = letterTemplate;
+      document.getElementById('modalOverlay').style.display = 'block';
+    }
+
+    function downloadLetter() {
+      const letterTemplate = document.getElementById('generatedLetter').innerText;
+      const blob = new Blob([letterTemplate], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = 'FOIA_Request_Letter.txt';
+      document.getElementById('modalOverlay').appendChild(downloadLink);
+      downloadLink.click();
+      document.getElementById('modalOverlay').removeChild(downloadLink);
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
